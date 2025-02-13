@@ -1,5 +1,5 @@
 <?php
-$uploaddir = 'C:\\xampp\\htdocs\\folder\\';
+$uploaddir = 'data/assets/';
 
 class Entry {
     public $id;
@@ -49,13 +49,13 @@ if (array_key_exists("userpdf", $_FILES)) {
     }
 }
 
-$file_list_data = file_get_contents('data.json');
+$file_list_data = file_get_contents('data/data.json');
 $data = json_decode($file_list_data, true);
 
 $data[] = $object;
 
 $new_file_list_data = json_encode($data);
-file_put_contents("data.json", $new_file_list_data);
+file_put_contents("data/data.json", $new_file_list_data);
 
 echo "Success";
 ?>

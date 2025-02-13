@@ -108,7 +108,7 @@
         let articles;
         let currentArticleIndex = -1;
 
-        fetch("config.json", {cache: 'reload'}).catch((e) => {
+        fetch("data/config.json", {cache: 'reload'}).catch((e) => {
             console.error(e);
         }).then(async (response) => {
             if (!response.ok) {
@@ -168,7 +168,7 @@
             let articleShutDown = false;
 
             function reloadArticles() {
-                fetch("data.json", {cache: 'reload'}).catch((e) => {
+                fetch("data/data.json", {cache: 'reload'}).catch((e) => {
                     console.error(e);
                 }).then(async (response) => {
                     let data = await response.json();

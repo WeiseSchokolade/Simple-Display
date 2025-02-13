@@ -2,7 +2,7 @@
 
 $id = $_GET["id"];
 
-$file_list_data = file_get_contents('data.json');
+$file_list_data = file_get_contents('data/data.json');
 $data = json_decode($file_list_data, true);
 
 $deleted = false;
@@ -23,7 +23,7 @@ if (!$deleted) {
 }
 
 $new_file_list_data = json_encode($data);
-file_put_contents("data.json", $new_file_list_data);
+file_put_contents("data/data.json", $new_file_list_data);
 
 echo "Delete successfully";
 ?>

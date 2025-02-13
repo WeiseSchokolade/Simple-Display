@@ -4,7 +4,7 @@ let articleMap = {};
 
 async function showList() {
     dynamicContent.innerHTML = "<div>Liste lädt...</div>";
-    let response = await fetch("../data.json", {
+    let response = await fetch("../data/data.json", {
         cache: "reload"
     });
     if (!response.ok) {
@@ -36,7 +36,7 @@ async function showList() {
             articleList.innerHTML += `
                 <div class="articleItem">
                     <div>
-                        PDF Datei: <a href="../folder/${article.pdf_location}">${article.pdf_location}</a>
+                        PDF Datei: <a href="../data/assets/${article.pdf_location}">${article.pdf_location}</a>
                     </div>
                     <div class="articleItemMeta">
                         <div>Anzeigedauer: ${article.duration}s</div>
@@ -55,8 +55,8 @@ async function showList() {
                             <div class="articleItemDescription">${article.description}</div>
                         </div>
                         ${article.type == "IMAGE" ? `
-                            <a class="listImagePreviewContainer" href="../folder/${article.image_location}">
-                                <img class="listImagePreview" src="../folder/${article.image_location}">
+                            <a class="listImagePreviewContainer" href="../data/assets/${article.image_location}">
+                                <img class="listImagePreview" src="../data/assets/${article.image_location}">
                             </a>
                         ` : ""}
                     </div>
