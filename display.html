@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable View</title>
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            margin: 0px;
+            height: 90vh;
+        }
+        :root {
+            height: 90vh;
+            margin-top: 5vh;
+            margin-left: 5vw;
+            margin-right: 5vw;
+        }
+        #content {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: row;
+            gap: 1vh;
+        }
+        #content > * {
+            flex: 1;
+        }
+        .view {
+            height: 100%;
+            border: none;
+        }
+        .page {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 5vh;
+            max-height: 100%;
+            overflow: hidden;
+        }
+        .clock {
+            margin-top: 4vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: x-large;
+            font-weight: 600;
+            flex-direction: column;
+        }
+        #time {
+            font-size: 150%;
+        }
+        #article  {
+            width: 100%;
+            max-height: 100%;
+        }
+        #image {
+            width: 100%;
+            max-height: 30vh;
+            object-fit: contain;
+        }
+        #header {
+            font-size: xxx-large;
+            text-align: center;
+            font-weight: 750;
+        }
+        #description {
+            font-size: x-large;
+        }
+        .pdfCanvasContainer {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .extraClock {
+            box-shadow: 0px 0px 15px 0px #000000;
+            font-size: xx-large;
+            border-radius: 3vh;
+            font-weight: 600;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: absolute;
+            bottom: 8vh;
+            right: 8vw;
+            background-color: white;
+            padding: 3vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        Ein Fehler ist beim Anzeigen des Dokuments aufgetreten
+    </div>
+    <div id="extraClock" class="extraClock" style="display: none;">
+
+    </div>
+    <script src="pdf.mjs" type="module"></script>
+    <script type="module">
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "pdf.worker.mjs";
+        let contentDiv = document.getElementById("content");
+        let articles;
+        let currentArticleIndex = -1;
+
+        fetch("config.json", {cache: 'reload'}).catch((e) => {
+            console.error(e);
+        }).then(async (response) => {
+            if (!response.ok) {
+                return;
+            }
+            let configurationData = await response.json();
+            if (!configurationData) {return;}
+
+            contentDiv.innerHTML = `
+                <iframe id="leftView" class="view"></iframe>
+                <div id="page" class="page">
+                    <div id="clock" class="clock">
+                        <div id="date"></div>
+                        <div id="time"></div>
+                    </div>
+                    <div id="article">
+                    </div>
+                </div>
+                <iframe id="rightView" class="view"></iframe>
+            `
+
+            let reloadTime = configurationData.reload_time_in_seconds;
+
+            let leftView = document.getElementById("leftView");
+            let rightView = document.getElementById("rightView");
+
+            leftView.setAttribute("src", configurationData.left);
+            rightView.setAttribute("src", configurationData.right);
+            
+            let dateDiv = document.getElementById("date");
+            let timeDiv = document.getElementById("time");
+            let dateFormat = new Intl.DateTimeFormat(
+                "de-DE",
+                {
+                    dateStyle: "full"
+                });
+            let timeFormat = new Intl.DateTimeFormat(
+                "de-DE",
+                {
+                    timeStyle: "medium"
+                });
+            setInterval(() => {
+                try {
+                    let time = Date.now();
+                    let formattedDateString = dateFormat.format(time);
+                    let formattedTimeString = timeFormat.format(time);
+                    dateDiv.textContent = formattedDateString;
+                    timeDiv.textContent = formattedTimeString;
+                } catch (error) {
+                    if (timeDiv) {
+                        timeDiv.textContent = "Uhr: Ein Fehler ist aufgetreten";
+                    }
+                }
+            }, 100);
+
+            let showArticleTimeout;
+            let articleShutDown = false;
+
+            function reloadArticles() {
+                fetch("data.json", {cache: 'reload'}).catch((e) => {
+                    console.error(e);
+                }).then(async (response) => {
+                    let data = await response.json();
+                    articles = data;
+
+                    setTimeout(reloadArticles, reloadTime * 1000);
+
+                    if (articles.length == 0) {
+                        if (articleShutDown) return;
+                        currentArticleIndex = -1;
+                        clearTimeout(showArticleTimeout);
+                        document.getElementById("page").style.display = "none";
+                        document.getElementById("article").innerHTML = "";
+                        let extraClock = document.getElementById("extraClock");
+                        extraClock.classList.add("extraClock");
+                        extraClock.innerHTML = `
+                            <div id="date"></div>
+                            <div id="time"></div>
+                        `;
+                        extraClock.style.display = "flex";
+                        dateDiv = document.querySelector("#extraClock #date");
+                        timeDiv = document.querySelector("#extraClock #time");
+                        articleShutDown = true;
+                    } else if (currentArticleIndex == -1) {
+                        articleShutDown = false;
+                        currentArticleIndex = 0;
+                        showArticle();
+                        document.getElementById("page").style.display = "flex";
+                        document.getElementById("extraClock").classList.remove("extraClock");
+                        document.getElementById("extraClock").style.display = "none";
+                        dateDiv = document.getElementById("date");
+                        timeDiv = document.getElementById("time");
+                    }
+                });
+            }
+
+            function showArticle() {
+                if (currentArticleIndex == -1) return;
+                let article = articles[currentArticleIndex];
+                currentArticleIndex++;
+                if (currentArticleIndex >= articles.length) currentArticleIndex = 0;
+                let articleDiv = document.getElementById("article");
+
+                switch (article.type) {
+                    case "PLAIN":
+                        articleDiv.innerHTML = `
+                            <div id="header"></div>
+                            <div id="description"></div>
+                            `;
+                        document.getElementById("header").textContent = article.header;
+                        document.getElementById("description").textContent = article.description;
+                        break;
+                    case "IMAGE":
+                        articleDiv.innerHTML = `
+                            <div id="header"></div>
+                            <img id="image"></img>
+                            <div id="description"></div>
+                            `;
+                        document.getElementById("header").textContent = article.header;
+                        document.getElementById("image").setAttribute("src", "./folder/" + article.image_location);
+                        document.getElementById("description").textContent = article.description;
+                        break;
+                    case "PDF":
+                        pdfjsLib.getDocument("./folder/" + article.pdf_location + "?a=" + (Math.floor(Math.random() * 1000))).promise.then((pdf) => {
+                            pdf.getPage(1).then((page) => {
+                                articleDiv.innerHTML = `
+                                    <div id="pdfCanvasContainer" class="pdfCanvasContainer">
+                                        <canvas id="pdfCanvas"></canvas>
+                                    </div>
+                                `;
+
+                                let canvas = document.getElementById('pdfCanvas');
+                                let canvasContainer = document.getElementById("pdfCanvasContainer");
+                                let clientRect = canvasContainer.getBoundingClientRect();
+                                let context = canvas.getContext("2d");
+
+                                let viewport = page.getViewport({scale: clientRect.width / (page.getViewport({scale: 1}).width)});
+                                
+                                canvas.width = Math.floor(viewport.width);
+                                canvas.height = Math.floor(viewport.height);
+                                canvas.style.width = canvas.width + "px";
+                                canvas.style.height =  canvas.height + "px";
+                                
+                                page.render({canvasContext: context, transform: [1, 0, 0, 1, 0, 0], viewport: viewport});
+                            });
+                        });
+                        
+                        break;
+                }
+                showArticleTimeout = setTimeout(showArticle, article.duration * 1000);
+            }
+            reloadArticles();
+        });
+    </script>
+</body>
+</html>

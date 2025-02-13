@@ -1,0 +1,11 @@
+
+/old
+*.jpg
+*.pdf
+*.zip
+pdf.mjs
+pdf.worker.mjs
+data.json
+timetableview/files.json
+timetableview/index.html
+/test
