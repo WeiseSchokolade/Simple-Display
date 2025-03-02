@@ -101,7 +101,11 @@
     </div>
     <script src="pdf.mjs" type="module"></script>
     <script type="module">
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "pdf.worker.mjs";
+        let pdfjsLibLoaded = false;
+        if (typeof pdfjsLib !== "undefined") {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "pdf.worker.mjs";
+            pdfjsLibLoaded = true;
+        }
         let contentDiv = document.getElementById("content");
         let articles;
         let currentArticleIndex = -1;

@@ -1,5 +1,6 @@
 {
-    "left": "./",
-    "right": "./",
+    "left": "./data/placeholders/placeholder_timetable.html",
+    "right": "./data/placeholders/placeholder_timetable.html",
+    "composition": null,
     "reload_time_in_seconds": 30
 }

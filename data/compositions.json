@@ -1,0 +1,45 @@
+[
+    {
+        "name": "Standard",
+        "type": "split3",
+        "slides": [
+            [
+                {
+                    "name": "VertretungsplanHeute",
+                    "condition": {
+                        "type": null
+                    }
+                }
+            ],
+            [
+                {
+                    "name": "mySlide",
+                    "condition": {
+                        "type": "duration",
+                        "duration": 5
+                    }
+                },
+                {
+                    "name": "mySecondSlide",
+                    "condition": {
+                        "type": "duration",
+                        "duration": 5
+                    }
+                }
+            ],
+            [
+                {
+                    "name": "VertretungsplanHeute",
+                    "condition": {
+                        "type": null
+                    }
+                }
+            ]
+        ],
+        "hasClock": false,
+        "condition": {
+            "type": "none"
+        },
+        "next": null
+    }
+]

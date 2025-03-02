@@ -1,0 +1,25 @@
+[
+    {
+        "name": "mySlide",
+        "type": "article",
+        "data": {
+            "header": "Lorem ipsum",
+            "text": "Lorem ipsum dolore sit amet."
+        }
+    },
+    {
+        "name": "mySecondSlide",
+        "type": "article",
+        "data": {
+            "header": "Hallo, dies ist ein zweiter Artikel",
+            "text": "Lies ihn dir gerne durch."
+        }
+    },
+    {
+        "name": "VertretungsplanHeute",
+        "type": "html",
+        "data": {
+            "url": "../data/placeholders/placeholder_timetable.html"
+        }
+    }
+]
