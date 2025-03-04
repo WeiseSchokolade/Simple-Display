@@ -21,5 +21,16 @@
         "data": {
             "url": "../data/placeholders/placeholder_timetable.html"
         }
+    },
+    {
+        "name": "digitalClock",
+        "type": "digitalClock"
+    },
+    {
+        "name": "Mein Bild",
+        "type": "image",
+        "data": {
+            "url": "../data/placeholders/image1.png"
+        }
     }
 ]

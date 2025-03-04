@@ -1,4 +1,5 @@
 const dynamicContent = document.getElementById("dynamicContent");
+const extraClock = document.getElementById("extraClock");
 let configData;
 let compositionData;
 let compositionMap;
@@ -11,6 +12,17 @@ let slideDisplayStateMachines = [];
 
 let compositionUpdateInterval = -1;
 let compositionConditionContext;
+
+const dateFormat = new Intl.DateTimeFormat(
+    "de-DE",
+    {
+        dateStyle: "full"
+    });
+const timeFormat = new Intl.DateTimeFormat(
+    "de-DE",
+    {
+        timeStyle: "medium"
+    });
 
 function showError(message) {
     dynamicContent.innerHTML = "";
@@ -66,6 +78,7 @@ async function reload() {
         
         for (let i = 0; i < slideDisplayStateMachines.length; i++) {
             let displayMachine = slideDisplayStateMachines[i];
+            updateSlide(displayMachine);
             if (!checkCondition(displayMachine.slideReferences[displayMachine.slideIndex].condition,
                 displayMachine.conditionContext)) {
                 displayMachine.slideIndex += 1;
@@ -75,6 +88,13 @@ async function reload() {
                 displayMachine.conditionContext = {};
                 displaySlide(displayMachine.element, displayMachine.slideReferences[displayMachine.slideIndex].name);
             }
+        }
+
+        if (displayComposition.hasClock) {
+            displayDigitalClock(extraClock);
+            extraClock.style.display = "flex";
+        } else {
+            extraClock.style.display = "none";
         }
     }, 100);
 }
@@ -140,7 +160,7 @@ function displayComposition(composition) {
 const compositionFunctions = {
     filled: (dynamicContent, composition) => {
         dynamicContent.innerHTML = `
-            <div class="composition">
+            <div class="maximized">
             </div>
         `;
         displaySlides(dynamicContent.firstElementChild, composition.slides[0]);
@@ -148,8 +168,18 @@ const compositionFunctions = {
     split2: (dynamicContent, composition) => {
         dynamicContent.innerHTML = `
             <div class="composition">
-                <div></div>
-                <div></div>
+                <div class="maximized"></div>
+                <div class="maximized"></div>
+            </div>
+        `;
+        displaySlides(dynamicContent.firstElementChild.children[0], composition.slides[0]);
+        displaySlides(dynamicContent.firstElementChild.children[1], composition.slides[1]);
+    },
+    weightedLeft: (dynamicContent, composition) => {
+        dynamicContent.innerHTML = `
+            <div class="composition">
+                <div class="maximized horizontalThird"></div>
+                <div class="maximized horizontalTwoThirds"></div>
             </div>
         `;
         displaySlides(dynamicContent.firstElementChild.children[0], composition.slides[0]);
@@ -158,14 +188,30 @@ const compositionFunctions = {
     split3: (dynamicContent, composition) => {
         dynamicContent.innerHTML = `
             <div class="composition">
-                <div></div>
-                <div></div>
-                <div></div>
+                <div class="maximized"></div>
+                <div class="maximized"></div>
+                <div class="maximized"></div>
             </div>
         `;
         displaySlides(dynamicContent.firstElementChild.children[0], composition.slides[0]);
         displaySlides(dynamicContent.firstElementChild.children[1], composition.slides[1]);
         displaySlides(dynamicContent.firstElementChild.children[2], composition.slides[2]);
+    },
+    split3clock: (dynamicContent, composition) => {
+        dynamicContent.innerHTML = `
+            <div class="composition">
+                <div class="maximized"></div>
+                <div class="maximized">
+                    <div class="verticalThird"></div>
+                    <div class="verticalTwoThirds"></div>
+                </div>
+                <div class="maximized"></div>
+            </div>
+        `;
+        displaySlides(dynamicContent.firstElementChild.children[0], composition.slides[0]);
+        displaySlides(dynamicContent.firstElementChild.children[1].children[0], composition.slides[1]);
+        displaySlides(dynamicContent.firstElementChild.children[1].children[1], composition.slides[2]);
+        displaySlides(dynamicContent.firstElementChild.children[2], composition.slides[3]);
     }
 };
 
@@ -189,8 +235,8 @@ function displaySlide(element, slideKey) {
         case "article":
             element.innerHTML = `
                 <div>
-                    <div></div>
-                    <div></div>
+                    <div class="articleHeader"></div>
+                    <div class="articleDescription"></div>
                 </div>
             `;
             element.children[0].children[0].textContent = slide.data.header;
@@ -198,9 +244,18 @@ function displaySlide(element, slideKey) {
             break;
         case "html":
             element.innerHTML = `
-                <iframe></iframe>
+                <iframe class="maximized simplifiedIframe"></iframe>
             `;
             element.firstElementChild.setAttribute("src", slide.data.url);
+            break;
+        case "image":
+            element.innerHTML = `
+                <img class="maximized"></img>
+            `;
+            element.firstElementChild.setAttribute("src", slide.data.url);
+            break;
+        case "digitalClock":
+            displayDigitalClock(element);
             break;
         default:
             showSlideError(element, "Unbekannter Folientyp: " + slide.type);
@@ -208,8 +263,28 @@ function displaySlide(element, slideKey) {
     }
 }
 
+function updateSlide(displayMachine) {
+    let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].name];
+    switch (slide.type) {
+        case "digitalClock":
+            displayDigitalClock(displayMachine.element);
+            break;
+    }
+}
+
 function showSlideError(element, message) {
     element.textContent = `Ein Fehler ist aufgetreten: ${message}`
+}
+
+function displayDigitalClock(element) {
+    let time = Date.now();
+    element.innerHTML = `
+        <div class="digitalClock">
+            <div class="date">${dateFormat.format(time)}</div>
+            <div class="time">${timeFormat.format(time)}</div>
+            <div>© https://weiseschokola.de</div>
+        </div>
+    `;
 }
 
 reload();

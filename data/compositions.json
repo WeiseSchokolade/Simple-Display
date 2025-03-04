@@ -1,13 +1,21 @@
 [
     {
         "name": "Standard",
-        "type": "split3",
+        "type": "split3clock",
         "slides": [
             [
                 {
                     "name": "VertretungsplanHeute",
                     "condition": {
                         "type": null
+                    }
+                }
+            ],
+            [
+                {
+                    "name": "digitalClock",
+                    "condition": {
+                        "type": "none"
                     }
                 }
             ],
@@ -25,6 +33,13 @@
                         "type": "duration",
                         "duration": 5
                     }
+                },
+                {
+                    "name": "Mein Bild",
+                    "condition": {
+                        "type": "duration",
+                        "duration": 10
+                    }
                 }
             ],
             [
@@ -37,6 +52,33 @@
             ]
         ],
         "hasClock": false,
+        "condition": {
+            "type": "none"
+        },
+        "next": null
+    },
+    {
+        "name": "NoArticles",
+        "type": "split2",
+        "slides": [
+            [
+                {
+                    "name": "VertretungsplanHeute",
+                    "condition": {
+                        "type": null
+                    }
+                }
+            ],
+            [
+                {
+                    "name": "VertretungsplanHeute",
+                    "condition": {
+                        "type": null
+                    }
+                }
+            ]
+        ],
+        "hasClock": true,
         "condition": {
             "type": "none"
         },
