@@ -1,21 +1,216 @@
 const dynamicContent = document.getElementById("dynamicContent");
+const navigationBar = document.getElementById("navigationBar");
 
-const pages = {
+let pages = {
     "index": {
         title: "Übersicht",
         dynamicContent: `
+            Willkommen bei dieser Übersicht.
         `,
         init: () => {
 
         }
+    },
+    "compositions": {
+        title: "Kompositionen",
+        init: async (element) => {
+            loading(element);
+            let compositionData = await fetch(`../data/compositions.json`, {cache: 'reload'});
+            let compositions = await compositionData.json();
+            const root = document.createElement("div");
+            root.classList.add("maximized");
+            root.classList.add("compositionList");
+            for (let i = 0; i < compositions.length; i++) {
+                let composition = compositions[i];
+                root.innerHTML += `
+                    <div class="compositionItem">
+                        <div class="compositionTypePreviewRoot"></div>
+                        <div>Name: ${composition.name}</div>
+                        <div>Typ: ${composition.type}</div>
+                    </div>
+                `;
+                renderType(root.lastElementChild.firstElementChild, composition.type);
+            }
+            root.innerHTML += `
+                <button class="addComposition">
+                    <div class="compositionTypePreviewRoot compositionType flexCentered maximized"><div class="centeredPlus">+</div></div>
+                    <div>Neue Komposition hinzufügen</div>
+                </button>
+            `;
+            root.lastElementChild.onclick = () => {
+                addTemporaryPage({
+                    title: "Komposition hinzufügen",
+                    dynamicContent: `
+                        <div class="flexColumn">
+                            <form id="compositionCreationForm">
+                            <div class="flex">
+                                <label for="compositionNameInput">Namen: </label>
+                                <input required id="compositionNameInput" name="compositionNameInput" type="text" />
+                            </div>
+                            <div class="flex">
+                                <label for="compositionExtraClockCheck">Extra Uhr: </label>
+                                <input id="compositionExtraClockCheck" type="checkbox"></input>
+                            </div>
+                            <div class="flex">
+                                <div>Typen: </div>
+                                <div id="typeButtonContainer" class="flex">
+                                    <button>Ausgefüllt</button>
+                                    <button>Zweigeteilt</button>
+                                    <button>Rechts gewichtet</button>
+                                    <button>Dreigeteilt</button>
+                                    <button>Dreigeteilt mit Uhr</button>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <input id="createCompositionButton" type="submit" value="Erstellen" />
+                            </div>
+                            </form>
+                        </div>
+                    `,
+                    init: (element) => {
+                        let typeButtons = document.querySelector("#typeButtonContainer").children;
+                        const types = ["filled", "split2", "weightedLeft", "split3", "split3clock"]
+                        let selectedType = 0;
+                        for (let i = 0; i < typeButtons.length; i++) {
+                            const typeButton = typeButtons[i];
+                            const index = i;
+                            if (index == selectedType) typeButton.setAttribute("disabled", "disabled");
+                            typeButton.onclick = () => {
+                                typeButtons[selectedType].removeAttribute("disabled");
+                                typeButton.setAttribute("disabled", "disabled");
+                                selectedType = i;
+                            }
+                            renderType(typeButton, types[i]);
+                        }
+                        document.querySelector("#compositionCreationForm").onsubmit(() => {
+
+                        });
+                    }
+                });
+            }
+            element.innerHTML = "";
+            element.appendChild(root);
+        }
+    },
+    "slides": {
+        title: "Folien"
     }
 };
+let currentPage = pages.index;
 
 function loadPage(key) {
-    const page = pages[key];
-    document.title = page.title;
-    dynamicContent.innerHTML = page.dynamicContent ? page.dynamicContent : "";
-    if (page.init) page.init(dynamicContent);
+    if (currentPage == key) return;
+    currentPage.navbarElement.classList.remove("selectedNavbarItem");
+    currentPage = pages[key];
+    document.title = currentPage.title;
+    dynamicContent.innerHTML = currentPage.dynamicContent ? currentPage.dynamicContent : "";
+    if (currentPage.init) currentPage.init(dynamicContent);
+
+    for (let pageKey in pages) {
+        if (pages.hasOwnProperty(pageKey)) {
+            let page = pages[pageKey];
+            if (page == currentPage) {
+                currentPage.navbarElement.classList.add("selectedNavbarItem");
+            }
+            if (page.isTemporary && pageKey != key) {
+                navigationBar.removeChild(pages[pageKey].navbarElement);
+                delete pages[pageKey];
+                continue;
+            }
+        }
+    }
 }
 
-loadPage("index");
+function reloadNavbar() {
+    navigationBar.innerHTML = "";
+    
+    for (let pageKey in pages) {
+        if (pages.hasOwnProperty(pageKey)) {
+            let page = pages[pageKey];
+            if (page.isTemporary) {
+                delete pages[pageKey];
+                continue;
+            }
+            const button = document.createElement("button");
+            button.classList.add("navbarItem");
+            button.textContent = page.title;
+            button.onclick = () => {
+                loadPage(pageKey);
+            }
+            navigationBar.appendChild(button);
+            page.navbarElement = button;
+        }
+    }
+}
+
+function addPageToNavbar(page) {
+    const button = document.createElement("button");
+    button.classList.add("navbarItem");
+    button.textContent = page.title;
+    button.onclick = () => {
+        loadPage(pageKey);
+    }
+    navigationBar.appendChild(button);
+    return button;
+}
+
+function addTemporaryPage(page) {
+    pages[page.title] = page;
+    page.isTemporary = true;
+    page.navbarElement = addPageToNavbar(page);
+    loadPage(page.title);
+}
+
+function loading(element) {
+    element.innerHTML = `
+        <div class="maximized flexCentered">
+            <div class="loadingIndicator"></div>
+        </div>
+    `;
+}
+
+function renderType(element, type) {
+    switch (type) {
+        case "filled":
+            element.innerHTML = `
+                <div class="compositionType maximized"></div>
+            `;
+            break;
+        case "split2":
+            element.innerHTML = `
+                <div class="compositionType maximized halfWidth"></div>
+                <div class="compositionType maximized halfWidth"></div>
+            `;
+            break;
+        case "weightedLeft":
+            element.innerHTML = `
+                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized twoThirdsWidth"></div>
+            `;
+            break;
+        case "split3":
+            element.innerHTML = `
+                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized thirdWidth"></div>
+            `;
+            break;
+        case "split3clock":
+            element.innerHTML = `
+                <div class="compositionType maximized thirdWidth"></div>
+                <div class="flexColumn maximized thirdWidth">
+                    <div class="compositionType maximized thirdHeight"></div>
+                    <div class="compositionType maximized twoThirdsHeight"></div>
+                </div>
+                <div class="compositionType maximized thirdWidth"></div>
+            `;
+            break;
+    }
+}
+
+function showEditCompositionPage(composition) {
+
+}
+
+reloadNavbar();
+loadPage("compositions")

@@ -83,5 +83,24 @@
             "type": "none"
         },
         "next": null
+    },
+    {
+        "name": "Filled",
+        "type": "filled",
+        "slides": [
+            [
+                {
+                    "name": "VertretungsplanHeute",
+                    "condition": {
+                        "type": null
+                    }
+                }
+            ]
+        ],
+        "hasClock": true,
+        "condition": {
+            "type": "none"
+        },
+        "next": null
     }
 ]
