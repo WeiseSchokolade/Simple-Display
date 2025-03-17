@@ -29,7 +29,7 @@ let pages = {
                         <div>Typ: ${composition.type}</div>
                     </div>
                 `;
-                renderType(root.lastElementChild.firstElementChild, composition.type);
+                renderCompositionType(root.lastElementChild.firstElementChild, composition.type);
             }
             root.innerHTML += `
                 <button class="addComposition">
@@ -80,7 +80,7 @@ let pages = {
                                 typeButton.setAttribute("disabled", "disabled");
                                 selectedType = i;
                             }
-                            renderType(typeButton, types[i]);
+                            renderCompositionType(typeButton, types[i]);
                         }
                         document.querySelector("#compositionCreationForm").onsubmit(() => {
 
@@ -93,8 +93,35 @@ let pages = {
         }
     },
     "slides": {
-        title: "Folien"
-    }
+        title: "Folien",
+        init: async (element) => {
+            loading(element);
+            let slideData = await fetch(`../data/slides.json`, {cache: 'reload'});
+            let slides = await slideData.json();
+            const root = document.createElement("div");
+            root.classList.add("maximized");
+            root.classList.add("compositionList");
+            for (let i = 0; i < slides.length; i++) {
+                let slide = slides[i];
+                root.innerHTML += `
+                    <div class="compositionItem">
+                        <div class="compositionTypePreviewRoot"></div>
+                        <div>Name: ${slide.name}</div>
+                        <div>Typ: ${slide.type}</div>
+                    </div>
+                `;
+                renderSlideType(root.lastElementChild.firstElementChild, slide.type);
+            }
+            root.innerHTML += `
+                <button class="addComposition">
+                    <div class="compositionTypePreviewRoot compositionType flexCentered maximized"><div class="centeredPlus">+</div></div>
+                    <div>Neue Folie hinzufügen</div>
+                </button>
+            `;
+            element.innerHTML = "";
+            element.appendChild(root);
+        }
+    },
 };
 let currentPage = pages.index;
 
@@ -169,7 +196,7 @@ function loading(element) {
     `;
 }
 
-function renderType(element, type) {
+function renderCompositionType(element, type) {
     switch (type) {
         case "filled":
             element.innerHTML = `
@@ -203,6 +230,37 @@ function renderType(element, type) {
                     <div class="compositionType maximized twoThirdsHeight"></div>
                 </div>
                 <div class="compositionType maximized thirdWidth"></div>
+            `;
+            break;
+    }
+}
+
+function renderSlideType(element, type) {
+    switch (type) {
+        case "html":
+            element.innerHTML = `
+                <div class="compositionType maximized flexCentered">HTML</div>
+            `;
+            break;
+        case "digitalClock":
+            element.innerHTML = `
+                <div class="compositionType maximized flexColumn flexCentered">
+                    <span>Stunden:Minuten</span>
+                    <span>Datum</span>
+                </div>
+            `;
+            break;
+        case "image":
+            element.innerHTML = `
+                <div class="compositionType maximized flexCentered">Bild</div>
+            `;
+            break;
+        case "article":
+            element.innerHTML = `
+                <div class="compositionType maximized flexColumn">
+                    <b>Überschrift</b>
+                    <p>Inhalt</p>
+                </div>
             `;
             break;
     }
