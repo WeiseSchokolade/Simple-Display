@@ -179,6 +179,8 @@ body {
 #typeButtonContainer > * {
     width: 200px;
     padding: 20px;
+    padding-top: calc(20px / (16/9));
+    padding-bottom: calc(20px / (16/9));
     aspect-ratio: 16 / 9;
     display: flex;
 }
