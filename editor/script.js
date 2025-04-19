@@ -82,9 +82,15 @@ let pages = {
                             }
                             renderCompositionType(typeButton, types[i]);
                         }
-                        document.querySelector("#compositionCreationForm").onsubmit(() => {
-
-                        });
+                        document.querySelector("#compositionCreationForm").onsubmit = () => {
+                            let data = {
+                                name: document.querySelector("#compositionNameInput"),
+                                extraClock: document.querySelector("#compositionExtraClockCheck").checked,
+                                selectedType: types[selectedType]
+                            };
+                            console.log(data);
+                            
+                        };
                     }
                 });
             }
