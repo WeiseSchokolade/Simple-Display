@@ -1,5 +1,9 @@
+import { showSlideOnElement } from "../display/slide.js";
+
 const dynamicContent = document.getElementById("dynamicContent");
 const navigationBar = document.getElementById("navigationBar");
+
+let token = "My Token";
 
 let pages = {
     "index": {
@@ -20,23 +24,27 @@ let pages = {
             const root = document.createElement("div");
             root.classList.add("maximized");
             root.classList.add("compositionList");
+            root.classList.add("scrollable");
             for (let i = 0; i < compositions.length; i++) {
                 let composition = compositions[i];
-                root.innerHTML += `
-                    <div class="compositionItem">
+                root.insertAdjacentHTML("beforeend", `
+                    <button class="compositionItem primaryTintedBackground">
                         <div class="compositionTypePreviewRoot"></div>
                         <div>Name: ${composition.name}</div>
                         <div>Typ: ${composition.type}</div>
-                    </div>
-                `;
+                    </button>
+                `);
+                root.lastElementChild.onclick = () => {
+                    showEditCompositionPage(composition);
+                }
                 renderCompositionType(root.lastElementChild.firstElementChild, composition.type);
             }
-            root.innerHTML += `
-                <button class="addComposition">
+            root.insertAdjacentHTML("beforeend", `
+                <button class="addComposition compositionItem">
                     <div class="compositionTypePreviewRoot compositionType flexCentered maximized"><div class="centeredPlus">+</div></div>
                     <div>Neue Komposition hinzufügen</div>
                 </button>
-            `;
+            `);
             root.lastElementChild.onclick = () => {
                 addTemporaryPage({
                     title: "Komposition hinzufügen",
@@ -51,7 +59,7 @@ let pages = {
                                 <label for="compositionExtraClockCheck">Extra Uhr: </label>
                                 <input id="compositionExtraClockCheck" type="checkbox"></input>
                             </div>
-                            <div class="flex">
+                            <div class="flex flexColumn">
                                 <div>Typen: </div>
                                 <div id="typeButtonContainer" class="flex">
                                     <button>Ausgefüllt</button>
@@ -82,14 +90,34 @@ let pages = {
                             }
                             renderCompositionType(typeButton, types[i]);
                         }
-                        document.querySelector("#compositionCreationForm").onsubmit = () => {
-                            let data = {
-                                name: document.querySelector("#compositionNameInput"),
-                                extraClock: document.querySelector("#compositionExtraClockCheck").checked,
-                                selectedType: types[selectedType]
-                            };
-                            console.log(data);
-                            
+                        document.querySelector("#compositionCreationForm").onsubmit = async (e) => {
+                            e.preventDefault();
+                            let url = new URL("./create_composition.php", window.location.href);
+                            url.searchParams.append("name", document.querySelector("#compositionNameInput").value);
+                            url.searchParams.append("extraClock", document.querySelector("#compositionExtraClockCheck").checked);
+                            url.searchParams.append("type", types[selectedType]);
+                            let response = await fetch(url, {
+                                method: "POST",
+                                headers: {
+                                    Authorization: token
+                                }
+                            });
+                            if (response.ok) {
+                                showEditCompositionPage(await response.json());
+                            } else {
+                                switch (response.status) {
+                                    case 401:
+                                        alert("Fehlende Authentifizierung");
+                                        break;
+                                    case 400:
+                                        alert("Schlechte Angaben");
+                                        break;
+                                    default:
+                                        alert("Ein Fehler ist aufgetreten: " + response.status + " " + response.statusText);
+                                        break;
+                                }
+                                return;
+                            }
                         };
                     }
                 });
@@ -273,7 +301,19 @@ function renderSlideType(element, type) {
 }
 
 function showEditCompositionPage(composition) {
+    addTemporaryPage({
+        title: "Komposition bearbeiten",
+        dynamicContent: `
+        <div class="flexColumn">
+            <span>Id: ${composition.id}</span>
+            <span>Name: ${composition.name}</span>
+        </div>
+        
+        `,
+        init: (element) => {
 
+        }
+    });
 }
 
 reloadNavbar();

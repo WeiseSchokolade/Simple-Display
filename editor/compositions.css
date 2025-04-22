@@ -1,0 +1,30 @@
+
+.compositionTypePreviewRoot {
+    aspect-ratio: 16 / 9;
+    display: flex;
+}
+
+.compositionType {
+    background-color: lightgray;
+    outline: 2px solid gray;
+}
+
+.halfWidth{
+    width: 50%;
+}
+
+.thirdWidth{
+    width: calc(1 / 3 * 100%);
+}
+
+.twoThirdsWidth{
+    width: calc(2 / 3 * 100%);
+}
+
+.thirdHeight{
+    height: calc(1 / 3 * 100%);
+}
+
+.twoThirdsHeight{
+    height: calc(2 / 3 * 100%);
+}
