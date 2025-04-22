@@ -1,3 +1,5 @@
+import { showSlideOnElement, updateElementWithSlideData, displayDigitalClockOnElement } from "./slide.js";
+
 const dynamicContent = document.getElementById("dynamicContent");
 const extraClock = document.getElementById("extraClock");
 let configData;
@@ -12,17 +14,6 @@ let slideDisplayStateMachines = [];
 
 let compositionUpdateInterval = -1;
 let compositionConditionContext;
-
-const dateFormat = new Intl.DateTimeFormat(
-    "de-DE",
-    {
-        dateStyle: "full"
-    });
-const timeFormat = new Intl.DateTimeFormat(
-    "de-DE",
-    {
-        timeStyle: "medium"
-    });
 
 function showError(message) {
     dynamicContent.innerHTML = "";
@@ -78,7 +69,7 @@ async function reload() {
         
         for (let i = 0; i < slideDisplayStateMachines.length; i++) {
             let displayMachine = slideDisplayStateMachines[i];
-            updateSlide(displayMachine);
+            updateSlides(displayMachine);
             if (!checkCondition(displayMachine.slideReferences[displayMachine.slideIndex].condition,
                 displayMachine.conditionContext)) {
                 displayMachine.slideIndex += 1;
@@ -86,12 +77,14 @@ async function reload() {
                     displayMachine.slideIndex = 0;
                 }
                 displayMachine.conditionContext = {};
-                displaySlide(displayMachine.element, displayMachine.slideReferences[displayMachine.slideIndex].name);
+                let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].name];
+                if (!slide) return showSlideError(element, "Couldn't display slide " + displayMachine.slideReferences[displayMachine.slideIndex].name);
+                showSlideOnElement(displayMachine.element, slide);
             }
         }
 
         if (displayComposition.hasClock) {
-            displayDigitalClock(extraClock);
+            displayDigitalClockOnElement(extraClock);
             extraClock.style.display = "flex";
         } else {
             extraClock.style.display = "none";
@@ -225,66 +218,15 @@ function displaySlides(element, slides) {
         conditionContext: {}
     };
     slideDisplayStateMachines.push(displayMachine);
-    displaySlide(element, slides[displayMachine.slideIndex].name);
+    let slide = slideMap[slides[displayMachine.slideIndex].name];
+    if (!slide) return showSlideError(element, "Couldn't display slide " + slides[displayMachine.slideIndex].name);
+    showSlideOnElement(element, slide);
 }
 
-function displaySlide(element, slideKey) {
-    let slide = slideMap[slideKey];
-    if (!slideKey || !slide) return showSlideError(element, "Couldn't display slide " + slideKey);
-    switch (slide.type) {
-        case "article":
-            element.innerHTML = `
-                <div>
-                    <div class="articleHeader"></div>
-                    <div class="articleDescription"></div>
-                </div>
-            `;
-            element.children[0].children[0].textContent = slide.data.header;
-            element.children[0].children[1].textContent = slide.data.text;
-            break;
-        case "html":
-            element.innerHTML = `
-                <iframe class="maximized simplifiedIframe"></iframe>
-            `;
-            element.firstElementChild.setAttribute("src", slide.data.url);
-            break;
-        case "image":
-            element.innerHTML = `
-                <img class="maximized"></img>
-            `;
-            element.firstElementChild.setAttribute("src", slide.data.url);
-            break;
-        case "digitalClock":
-            displayDigitalClock(element);
-            break;
-        default:
-            showSlideError(element, "Unbekannter Folientyp: " + slide.type);
-            break;
-    }
-}
 
-function updateSlide(displayMachine) {
+function updateSlides(displayMachine) {
     let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].name];
-    switch (slide.type) {
-        case "digitalClock":
-            displayDigitalClock(displayMachine.element);
-            break;
-    }
-}
-
-function showSlideError(element, message) {
-    element.textContent = `Ein Fehler ist aufgetreten: ${message}`
-}
-
-function displayDigitalClock(element) {
-    let time = Date.now();
-    element.innerHTML = `
-        <div class="digitalClock">
-            <div class="date">${dateFormat.format(time)}</div>
-            <div class="time">${timeFormat.format(time)}</div>
-            <div>© https://weiseschokola.de</div>
-        </div>
-    `;
+    updateElementWithSlideData(displayMachine.element, slide);
 }
 
 reload();
