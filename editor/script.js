@@ -21,6 +21,8 @@ let pages = {
             loading(element);
             let compositionData = await fetch(`../data/compositions.json`, {cache: 'reload'});
             let compositions = await compositionData.json();
+            showEditCompositionPage(compositions[0]);
+            return;
             const root = document.createElement("div");
             root.classList.add("maximized");
             root.classList.add("compositionList");
@@ -230,40 +232,40 @@ function loading(element) {
     `;
 }
 
-function renderCompositionType(element, type) {
+function renderCompositionType(element, type, selectionClass="") {
     switch (type) {
         case "filled":
             element.innerHTML = `
-                <div class="compositionType maximized"></div>
+                <div class="compositionType maximized ${selectionClass}"></div>
             `;
             break;
         case "split2":
             element.innerHTML = `
-                <div class="compositionType maximized halfWidth"></div>
-                <div class="compositionType maximized halfWidth"></div>
+                <div class="compositionType maximized halfWidth ${selectionClass}"></div>
+                <div class="compositionType maximized halfWidth ${selectionClass}"></div>
             `;
             break;
         case "weightedLeft":
             element.innerHTML = `
-                <div class="compositionType maximized thirdWidth"></div>
-                <div class="compositionType maximized twoThirdsWidth"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
+                <div class="compositionType maximized twoThirdsWidth ${selectionClass}"></div>
             `;
             break;
         case "split3":
             element.innerHTML = `
-                <div class="compositionType maximized thirdWidth"></div>
-                <div class="compositionType maximized thirdWidth"></div>
-                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
             `;
             break;
         case "split3clock":
             element.innerHTML = `
-                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
                 <div class="flexColumn maximized thirdWidth">
-                    <div class="compositionType maximized thirdHeight"></div>
-                    <div class="compositionType maximized twoThirdsHeight"></div>
+                    <div class="compositionType maximized thirdHeight ${selectionClass}"></div>
+                    <div class="compositionType maximized twoThirdsHeight ${selectionClass}"></div>
                 </div>
-                <div class="compositionType maximized thirdWidth"></div>
+                <div class="compositionType maximized thirdWidth ${selectionClass}"></div>
             `;
             break;
     }
@@ -304,16 +306,55 @@ function showEditCompositionPage(composition) {
     addTemporaryPage({
         title: "Komposition bearbeiten",
         dynamicContent: `
-        <div class="flexColumn">
-            <span>Id: ${composition.id}</span>
-            <span>Name: ${composition.name}</span>
+        <div class="flexColumn maximized ">
+            <div class="flex maximized">
+                <div class="maximized flexColumn">
+                    <div class="maximized thirdHeight">
+                        <div class="flexColumn">
+                            <span>Id: ${composition.id}</span>
+                            <span>Name: ${composition.name}</span>
+                            <span>Typ: ${composition.type}</span>
+                        </div>
+                    </div>
+                    <div class="maximized flexCentered compositionPreviewContainer">
+                        <div id="compositionTypePreviewRoot" class="compositionTypePreviewRoot compositionPreview">
+                        </div>
+                    </div>
+                </div>
+                <div class="maximized halfWidth" id="compositionSlideList">
+                    <div class="maximized flexCentered">
+                        Wähle einen Bereich aus, um zu Beginnen
+                    </div>
+                </div>
+            </div>
         </div>
-        
         `,
-        init: (element) => {
-
+        init: () => {
+            renderCompositionType(document.querySelector("#compositionTypePreviewRoot"), composition.type, "compositionEditPreviewClickable flexCentered");
+            let elements = document.getElementsByClassName("compositionEditPreviewClickable");
+            const compositionSlideList = document.getElementById("compositionSlideList");
+            let selectedElement = null;
+            function select(element) {
+                if (selectedElement != null) {
+                    selectedElement.classList.replace("compositionEditPreviewClicked", "compositionEditPreviewClickable");
+                    selectedElement.textContent = "Bearbeiten";
+                }
+                selectedElement = element;
+                selectedElement.classList.replace("compositionEditPreviewClickable", "compositionEditPreviewClicked");
+                selectedElement.textContent = "Ausgewählt";
+            }
+            for (const element of elements) {
+                element.onclick = () => {
+                    if (element != selectedElement) select(element);
+                }
+                element.textContent = "Bearbeiten";
+            }
         }
     });
+}
+
+function renderCompositionSlideList(element, ) {
+
 }
 
 reloadNavbar();

@@ -156,3 +156,36 @@ body {
     aspect-ratio: 16 / 9;
     display: flex;
 }
+
+.compositionPreview {
+    width: 80%;
+}
+
+.compositionPreviewContainer {
+    background-color: black;
+    border-top-right-radius: 5px;
+}
+
+.compositionEditPreviewClickable {
+    color: lightgray;
+    transition: background-color linear 0.1s, color linear 0.2s;
+    user-select: none;
+}
+
+.compositionEditPreviewClicked {
+    color: white;
+    background-color: rgb(107, 107, 107);
+    transition: background-color linear 0.1s, color linear 0.2s;
+    user-select: none;
+}
+
+.compositionEditPreviewClickable:hover {
+    background-color: rgb(75, 75, 75);
+    color: white;
+}
+
+.compositionEditPreviewClickable:active {
+    background-color: rgb(50, 50, 50);
+    transition: background-color linear 0s, color linear 0s;
+
+}
