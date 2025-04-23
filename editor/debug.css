@@ -1,0 +1,31 @@
+.borderedEverything {
+    border: solid 2px #000;
+}
+
+.borderedEverything > * {
+    border: solid 2px #222;
+}
+
+.borderedEverything > * > * {
+    border: solid 2px #444;
+}
+
+.borderedEverything > * > * > * {
+    border: solid 2px #666;
+}
+
+.borderedEverything > * > * > * > * {
+    border: solid 2px #888;
+}
+
+.borderedEverything > * > * > * > * > * {
+    border: solid 2px #AAA;
+}
+
+.borderedEverything > * > * > * > * > * > * {
+    border: solid 2px #CCC;
+}
+
+.borderedEverything > * > * > * > * > * > * > * {
+    border: solid 2px #EEE;
+}
