@@ -187,8 +187,18 @@ body {
 }
 
 #compositionSlideList {
-    background-color: var(--secondaryTinted);
     overflow-y: scroll;
+}
+
+.compositionSlideEditor {
+    background-color: var(--secondaryTinted);
+}
+
+.compositionSlideListToolbar {
+    position: sticky;
+    width: 100%;
+    height: 50px;
+    background-color: var(--secondary);
 }
 
 .slideReferenceListItem {

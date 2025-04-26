@@ -334,9 +334,14 @@ function showEditCompositionPage(composition) {
                         </div>
                     </div>
                 </div>
-                <div class="maximized halfWidth flexColumn" id="compositionSlideList">
-                    <div class="maximized flexCentered">
-                        Wähle einen Bereich aus, um zu Beginnen
+                <div class="maximized halfWidth flexColumn compositionSlideEditor">
+                    <div id="compositionSlideListToolbar">
+                        <button>Folie hinzufügen</button>
+                    </div>
+                    <div class="maximized flexColumn" id="compositionSlideList">
+                        <div class="maximized flexCentered">
+                            Wähle einen Bereich aus, um zu Beginnen
+                        </div>
                     </div>
                 </div>
             </div>
@@ -384,9 +389,7 @@ function showEditCompositionPage(composition) {
 }
 
 function renderCompositionEditSlideList(listElement, slides, formatClasses) {
-    listElement.innerHTML = `
-        
-    `;
+    listElement.innerHTML = "";
     for (const [index, slideReference] of slides.entries()) {
         let slideData = slideMap[slideReference.id];
         listElement.insertAdjacentHTML("beforeend", `
