@@ -384,8 +384,10 @@ function showEditCompositionPage(composition) {
 }
 
 function renderCompositionEditSlideList(listElement, slides, formatClasses) {
-    listElement.innerHTML = "";
-    for (const slideReference of slides) {
+    listElement.innerHTML = `
+        
+    `;
+    for (const [index, slideReference] of slides.entries()) {
         let slideData = slideMap[slideReference.id];
         listElement.insertAdjacentHTML("beforeend", `
             <div class="slideReferenceListItem">
@@ -397,14 +399,36 @@ function renderCompositionEditSlideList(listElement, slides, formatClasses) {
                     Condition
                 </div>
                 <div>
-                    <button>Up</button>
-                    <button>Down</button>
+                    <button>Davor</button>
+                    <button>Danach</button>
+                    <button>Entfernen</button>
                 </div>
             </div>
             `);
         const element = listElement.lastElementChild;
         element.children[0].textContent = "Name: " + slideData.name;
         showPreviewOnElement(element.children[1].children[0], slideData);
+        if (index > 0) {
+            element.children[3].children[0].onclick = () => {
+                slides.splice(index, 1);
+                slides.splice(index - 1, 0, slideReference);
+                renderCompositionEditSlideList(listElement, slides, formatClasses);
+            }
+        } else {
+            element.children[3].children[0].setAttribute("disabled", "disabled");
+        }
+        if (index < slides.length - 1) {
+            element.children[3].children[1].onclick = () => {
+                slides.splice(index, 1);
+                slides.splice(index + 1, 0, slideReference);
+                renderCompositionEditSlideList(listElement, slides, formatClasses);
+            }
+        } else {
+            element.children[3].children[1].setAttribute("disabled", "disabled");
+        }
+        element.children[3].children[2].onclick = () => {
+            slides.splice(index, 1);
+        }
     }
 }
 
