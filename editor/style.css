@@ -10,6 +10,8 @@
     --primaryTinted: #d6ffdf;
     --primaryBorder: #69bba7;
     --primaryHovered: #008060;
+    --secondary: #258da7;
+    --secondaryTinted: #e6f6fb;
     --borderRadius: 15px;
 }
 
@@ -20,11 +22,6 @@ body {
 
 .content {
     display: flex;
-    width: 100%;
-    height: 100%;
-}
-
-.maximized {
     width: 100%;
     height: 100%;
 }
@@ -187,5 +184,20 @@ body {
 .compositionEditPreviewClickable:active {
     background-color: rgb(50, 50, 50);
     transition: background-color linear 0s, color linear 0s;
+}
 
+#compositionSlideList {
+    background-color: var(--secondaryTinted);
+    overflow-y: scroll;
+}
+
+.slideReferenceListItem {
+    margin: 5px;
+    padding: 15px;
+    background-color: var(--primaryTinted);
+    border-radius: var(--borderRadius);
+}
+
+.slideReferencePreview {
+    aspect-ratio: 16 / 9;
 }
