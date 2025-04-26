@@ -5,7 +5,7 @@
         "slides": [
             [
                 {
-                    "name": "VertretungsplanHeute",
+                    "id": "VertretungsplanHeute",
                     "condition": {
                         "type": null
                     }
@@ -13,7 +13,7 @@
             ],
             [
                 {
-                    "name": "digitalClock",
+                    "id": "digitalClock",
                     "condition": {
                         "type": "none"
                     }
@@ -21,21 +21,21 @@
             ],
             [
                 {
-                    "name": "mySlide",
+                    "id": "mySlide",
                     "condition": {
                         "type": "duration",
                         "duration": 5
                     }
                 },
                 {
-                    "name": "mySecondSlide",
+                    "id": "mySecondSlide",
                     "condition": {
                         "type": "duration",
                         "duration": 5
                     }
                 },
                 {
-                    "name": "Mein Bild",
+                    "id": "Mein Bild",
                     "condition": {
                         "type": "duration",
                         "duration": 10
@@ -44,7 +44,7 @@
             ],
             [
                 {
-                    "name": "VertretungsplanHeute",
+                    "id": "VertretungsplanHeute",
                     "condition": {
                         "type": null
                     }
@@ -63,7 +63,7 @@
         "slides": [
             [
                 {
-                    "name": "VertretungsplanHeute",
+                    "id": "VertretungsplanHeute",
                     "condition": {
                         "type": null
                     }
@@ -71,7 +71,7 @@
             ],
             [
                 {
-                    "name": "VertretungsplanHeute",
+                    "id": "VertretungsplanHeute",
                     "condition": {
                         "type": null
                     }
@@ -90,7 +90,7 @@
         "slides": [
             [
                 {
-                    "name": "VertretungsplanHeute",
+                    "id": "VertretungsplanHeute",
                     "condition": {
                         "type": null
                     }
