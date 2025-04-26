@@ -31,6 +31,44 @@ export function showSlideOnElement(element, slideData) {
     }
 }
 
+export function showPreviewOnElement(element, slideData, formatClass) {
+    switch (slideData.type) {
+        case "article":
+            element.innerHTML = `
+                <div>
+                    <div class="articleHeader"></div>
+                    <div class="articleDescription"></div>
+                </div>
+            `;
+            element.children[0].children[0].textContent = slideData.data.header;
+            element.children[0].children[1].textContent = slideData.data.text;
+            break;
+        case "html":
+            element.innerHTML = `
+                <div>HTML: ${slideData.data.url}</div>
+            `;
+            break;
+        case "image":
+            element.innerHTML = `
+                <img class="maximized"></img>
+            `;
+            element.firstElementChild.setAttribute("src", slideData.data.url);
+            break;
+        case "digitalClock":
+            element.innerHTML = `
+                <div class="digitalClock">
+                    <div class="date">Datum</div>
+                    <div class="time">Uhrzeit</div>
+                    <div>© https://weiseschokola.de</div>
+                </div>
+            `;
+            break;
+        default:
+            showSlideError(element, "Unbekannter Folientyp: " + slideData.type);
+            break;
+    }
+}
+
 export function updateElementWithSlideData(element, slideData) {
     switch (slideData.type) {
         case "digitalClock":
