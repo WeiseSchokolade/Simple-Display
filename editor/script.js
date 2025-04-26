@@ -1,4 +1,4 @@
-import { showSlideOnElement } from "../display/slide.js";
+import { showPreviewOnElement } from "../display/slide.js";
 
 const dynamicContent = document.getElementById("dynamicContent");
 const navigationBar = document.getElementById("navigationBar");
@@ -334,7 +334,7 @@ function showEditCompositionPage(composition) {
                         </div>
                     </div>
                 </div>
-                <div class="maximized halfWidth" id="compositionSlideList">
+                <div class="maximized halfWidth flexColumn" id="compositionSlideList">
                     <div class="maximized flexCentered">
                         Wähle einen Bereich aus, um zu Beginnen
                     </div>
@@ -347,7 +347,7 @@ function showEditCompositionPage(composition) {
             let elements = document.getElementsByClassName("compositionEditPreviewClickable");
             const compositionSlideList = document.getElementById("compositionSlideList");
             let selectedElement = null;
-            function select(element) {
+            function select(element, index) {
                 if (selectedElement != null) {
                     selectedElement.classList.replace("compositionEditPreviewClicked", "compositionEditPreviewClickable");
                     selectedElement.textContent = "Bearbeiten";
@@ -355,19 +355,57 @@ function showEditCompositionPage(composition) {
                 selectedElement = element;
                 selectedElement.classList.replace("compositionEditPreviewClickable", "compositionEditPreviewClicked");
                 selectedElement.textContent = "Ausgewählt";
+                let classes = new Set();
+                function addElementClasses(element) {
+                    element.classList.forEach(e => classes.add(e));
+                    if (!element.parentElement.classList.contains("compositionPreview")) {
+                        addElementClasses(element.parentElement);
+                    }
+                }
+                addElementClasses(selectedElement);
+                let formatClasses = Array.from(classes).filter(e => !(
+                    e == "compositionEditPreviewClickable" ||
+                    e == "compositionEditPreviewClicked" ||
+                    e == "compositionType" ||
+                    e == "flexCentered" ||
+                    e == "flexColumn" ||
+                    e == "flex" ||
+                    e == "maximized" ));
+                renderCompositionEditSlideList(compositionSlideList, composition.slides[index], formatClasses);
             }
-            for (const element of elements) {
+            Array.from(elements).forEach((element, index) => {
                 element.onclick = () => {
-                    if (element != selectedElement) select(element);
+                    if (element != selectedElement) select(element, index);
                 }
                 element.textContent = "Bearbeiten";
-            }
+            });
         }
     });
 }
 
-function renderCompositionSlideList(element, ) {
-
+function renderCompositionEditSlideList(listElement, slides, formatClasses) {
+    listElement.innerHTML = "";
+    for (const slideReference of slides) {
+        let slideData = slideMap[slideReference.id];
+        listElement.insertAdjacentHTML("beforeend", `
+            <div class="slideReferenceListItem">
+                <div></div>
+                <div class="slideReferencePreview flexCentered">
+                    <div class="compositionType maximized ${formatClasses.join(" ")}"></div>
+                </div>
+                <div>
+                    Condition
+                </div>
+                <div>
+                    <button>Up</button>
+                    <button>Down</button>
+                </div>
+            </div>
+            `);
+        const element = listElement.lastElementChild;
+        element.children[0].textContent = "Name: " + slideData.name;
+        showPreviewOnElement(element.children[1].children[0], slideData);
+    }
 }
 
 reloadNavbar();
