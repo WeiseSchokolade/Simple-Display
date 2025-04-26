@@ -53,7 +53,7 @@ async function reload() {
     slideMap = {};
     for (let i = 0; i < slideData.length; i++) {
         let slide = slideData[i];
-        slideMap[slide.name] = slide;
+        slideMap[slide.id] = slide;
     }
     let chosenCompositionKey = configData["composition"] ? configData.composition : compositionData[0].name;
     if (!displayNextComposition(chosenCompositionKey)) {
@@ -218,14 +218,14 @@ function displaySlides(element, slides) {
         conditionContext: {}
     };
     slideDisplayStateMachines.push(displayMachine);
-    let slide = slideMap[slides[displayMachine.slideIndex].name];
-    if (!slide) return showSlideError(element, "Couldn't display slide " + slides[displayMachine.slideIndex].name);
+    let slide = slideMap[slides[displayMachine.slideIndex].id];
+    if (!slide) return showSlideError(element, "Couldn't display slide " + slides[displayMachine.slideIndex].id);
     showSlideOnElement(element, slide);
 }
 
 
 function updateSlides(displayMachine) {
-    let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].name];
+    let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].id];
     updateElementWithSlideData(displayMachine.element, slide);
 }
 
