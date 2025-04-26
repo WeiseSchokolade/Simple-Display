@@ -5,24 +5,37 @@ const navigationBar = document.getElementById("navigationBar");
 
 let token = "My Token";
 
+let compositions;
+let compositionMap;
+let slides;
+let slideMap;
+
+async function reloadData() {
+    let compositionData = await fetch(`../data/compositions.json`, {cache: 'reload'});
+    compositions = await compositionData.json();
+    compositionMap = {};
+    compositions.forEach(e => compositionMap[e.id] = e);
+    let slideData = await fetch(`../data/slides.json`, {cache: 'reload'});
+    slides = await slideData.json();
+    slideMap = {};
+    slides.forEach(e => slideMap[e.id] = e);
+}
+
 let pages = {
     "index": {
         title: "Übersicht",
         dynamicContent: `
             Willkommen bei dieser Übersicht.
         `,
-        init: () => {
-
+        init: async (element) => {
+            loading(element);
+            await reloadData();
+            showEditCompositionPage(compositions[0]);
         }
     },
     "compositions": {
         title: "Kompositionen",
         init: async (element) => {
-            loading(element);
-            let compositionData = await fetch(`../data/compositions.json`, {cache: 'reload'});
-            let compositions = await compositionData.json();
-            showEditCompositionPage(compositions[0]);
-            return;
             const root = document.createElement("div");
             root.classList.add("maximized");
             root.classList.add("compositionList");
@@ -159,11 +172,11 @@ let pages = {
         }
     },
 };
-let currentPage = pages.index;
+let currentPage = null;
 
-function loadPage(key) {
-    if (currentPage == key) return;
-    currentPage.navbarElement.classList.remove("selectedNavbarItem");
+function loadPage(key, force=false) {
+    if (currentPage == key && !force) return;
+    if (currentPage != null) currentPage.navbarElement.classList.remove("selectedNavbarItem");
     currentPage = pages[key];
     document.title = currentPage.title;
     dynamicContent.innerHTML = currentPage.dynamicContent ? currentPage.dynamicContent : "";
@@ -358,4 +371,4 @@ function renderCompositionSlideList(element, ) {
 }
 
 reloadNavbar();
-loadPage("compositions")
+loadPage("index")
