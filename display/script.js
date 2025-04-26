@@ -1,4 +1,4 @@
-import { showSlideOnElement, updateElementWithSlideData, displayDigitalClockOnElement } from "./slide.js";
+import { showSlideOnElement, updateElementWithSlideData, displayDigitalClockOnElement, showErrorOnSlide } from "./slide.js";
 
 const dynamicContent = document.getElementById("dynamicContent");
 const extraClock = document.getElementById("extraClock");
@@ -77,8 +77,8 @@ async function reload() {
                     displayMachine.slideIndex = 0;
                 }
                 displayMachine.conditionContext = {};
-                let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].name];
-                if (!slide) return showSlideError(element, "Couldn't display slide " + displayMachine.slideReferences[displayMachine.slideIndex].name);
+                let slide = slideMap[displayMachine.slideReferences[displayMachine.slideIndex].id];
+                if (!slide) return showErrorOnSlide(displayMachine.element, "Couldn't display slide " + displayMachine.slideReferences[displayMachine.slideIndex].id);
                 showSlideOnElement(displayMachine.element, slide);
             }
         }
@@ -219,7 +219,7 @@ function displaySlides(element, slides) {
     };
     slideDisplayStateMachines.push(displayMachine);
     let slide = slideMap[slides[displayMachine.slideIndex].id];
-    if (!slide) return showSlideError(element, "Couldn't display slide " + slides[displayMachine.slideIndex].id);
+    if (!slide) return showErrorOnSlide(element, "Couldn't display slide " + slides[displayMachine.slideIndex].id);
     showSlideOnElement(element, slide);
 }
 

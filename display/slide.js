@@ -26,7 +26,7 @@ export function showSlideOnElement(element, slideData) {
             displayDigitalClockOnElement(element);
             break;
         default:
-            showSlideError(element, "Unbekannter Folientyp: " + slideData.type);
+            showErrorOnSlide(element, "Unbekannter Folientyp: " + slideData.type);
             break;
     }
 }
@@ -64,7 +64,7 @@ export function showPreviewOnElement(element, slideData, formatClass) {
             `;
             break;
         default:
-            showSlideError(element, "Unbekannter Folientyp: " + slideData.type);
+            showErrorOnSlide(element, "Unbekannter Folientyp: " + slideData.type);
             break;
     }
 }
