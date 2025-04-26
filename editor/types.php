@@ -5,12 +5,12 @@ class Composition {
     public $name;
     public $extraClock;
     public $type;
-    public $slides;
-    public Condition $condition;
+    public $slides; // Array of slide _references_
+    public Condition|null $condition;
     public string|null $next;
 
-    public function __construct($name, $extraClock, $type) {
-        $this->id = hash("sha256", $name . $extraClock . time());
+    public function __construct($name, $extraClock, $type, $id=hash("sha256", $name . $extraClock . time())) {
+        $this->id = $id;
         $this->name = $name;
         $this->extraClock = $extraClock;
         $this->type = $type;
