@@ -20,6 +20,24 @@ class Composition {
     }
 }
 
+class Slide {
+    public string $id;
+    public string $name;
+    public string $type;
+    public $data;
+}
+
+class SlideReference {
+    public string $id;
+    public Condition $condition;
+
+    public function __construct($id, $condition)
+    {
+        $this->id = $id;
+        $this->condition = $condition;
+    }
+}
+
 abstract class Condition {
     public string $type;
 
