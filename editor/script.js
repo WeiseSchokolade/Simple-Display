@@ -150,11 +150,12 @@ let pages = {
             const root = document.createElement("div");
             root.classList.add("maximized");
             root.classList.add("compositionList");
+            root.classList.add("scrollable");
             for (let i = 0; i < slides.length; i++) {
                 let slide = slides[i];
                 root.innerHTML += `
-                    <div class="compositionItem">
-                        <div class="compositionTypePreviewRoot"></div>
+                    <div class="compositionItem primaryTintedBackground">
+                        <div class="compositionType"></div>
                         <div>Name: ${slide.name}</div>
                         <div>Typ: ${slide.type}</div>
                     </div>
